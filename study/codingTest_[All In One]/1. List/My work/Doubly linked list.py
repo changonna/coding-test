@@ -1,8 +1,8 @@
 '''
 Doubly linked list
 
-tail 있고
-prev 있고 next 있고
+visit() 할 때 : 시간복잡도 O(1)
+forward(), back() 할 때 : 시간복잡도 O(n)
 '''
 
 class Node :
@@ -39,8 +39,10 @@ class LinkedList(object):
             for _ in range(idx-1):
                 current = current.next
             next_node = current.next
+
             current.next = new_node
             new_node.prev = current
+            
             next_node.prev = new_node
             new_node.next = next_node
     def remove(self, idx):
