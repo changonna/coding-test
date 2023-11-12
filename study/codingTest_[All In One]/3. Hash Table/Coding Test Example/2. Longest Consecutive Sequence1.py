@@ -3,7 +3,7 @@
 class Solution(object):
     def longestConsecutive(self, nums):
         memo = {}
-        max = 0
+        maxCnt = 0
 
         ## O(n)
         for num in nums:
@@ -12,20 +12,16 @@ class Solution(object):
         ## O(n)
         for num in nums:
             cnt = 1
-            next = num + 1
-            prev = num - 1
-            if prev not in memo:
+            target = num + 1
+            if num - 1 not in memo:
                 # 최대 n번만
-                while next in memo: # [in] Dictionary : O(1)
+                while target in memo: # [in] Dictionary : O(1)
                     cnt += 1
-                    next += 1
-            if max < cnt:
-                max = cnt
-        return max
-
-
-
-
+                    target += 1
+            cnt = max(cnt, maxCnt)
+            if maxCnt < cnt:
+                maxCnt = cnt
+        return maxCnt
 
 
 sol = Solution()
