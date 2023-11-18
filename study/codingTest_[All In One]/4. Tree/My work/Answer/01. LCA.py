@@ -14,17 +14,16 @@ class TreeNode(object):
 
 class Solution(object):
     def lowestCommonAncestor(self, root, p, q):
-        if root is None:
+        if root == None:
             return None
         
-        left = self.lowestCommonAncestor(root.left, p, q)
+        left = self.lowestCommonAncestor(root.left, p, q) 
         right = self.lowestCommonAncestor(root.right, p, q)
-        
-        if (root.val == p or root.val == q) or (left and right):
+        if root.val == p or root.val == q:
             return root.val
-        else:
-            return left or right
-
+        elif left and right:
+            return root.val
+        return left or right
         
 
 bt = TreeNode(3)
