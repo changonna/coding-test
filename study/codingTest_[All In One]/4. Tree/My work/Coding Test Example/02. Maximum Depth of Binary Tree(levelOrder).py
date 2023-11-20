@@ -23,7 +23,7 @@ class Solution(object):
                 q.appendleft((cur_node.left, cur_depth+1))
             if cur_node.right:
                 q.appendleft((cur_node.right, cur_depth+1))
-            return max_depth
+        return max_depth
     
 
 bt = TreeNode(3)
