@@ -17,7 +17,9 @@ class Solution(object):
            dx = [-1, 1, 0, 0]
            dy = [0, 0, -1, 1]
 
+          # 방문한 값 True
            visited[x][y] = True
+           # queue 선언 및 초기화
            queue = deque()
            queue.append((x, y))
            while queue:
