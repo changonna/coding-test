@@ -9,8 +9,10 @@ class Solution(object):
     """
     costs = {}
     pq = []
-    # times를 graph로 변경
+    # 1. 그래프 구현 : times를 graph로 변경
     graph = { i:[] for i in range(1, n+1) }
+
+    # 2. 다익스트라 알고리즘
     for cur_v, next_v, cur_cost in times:
       graph[cur_v].append((cur_cost, next_v))
 
@@ -26,7 +28,9 @@ class Solution(object):
           total_cost = cur_cost + next_cost
           heapq.heappush(pq, (total_cost, next_v))
 
+    # 3. 방문 못한 노드 찾기 : costs와 n의 길이가 같으면 모두 갈 수 있으니까
     if len(costs) == n:
+      # 4. 최소값중에서 최대값 구하기
       return max(costs.values())
     return -1
 
