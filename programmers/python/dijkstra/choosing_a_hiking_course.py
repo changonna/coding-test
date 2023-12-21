@@ -1,3 +1,5 @@
+# 내가 푼 코드
+
 '''
 2022 KAKAO TECH INTERNSHIP
 Level : 3
@@ -25,120 +27,65 @@ intensity : 가장 긴 시간을 해당 등산코스의 intensity
 
 intensity 최소의 등산코스
 '''
+
 from collections import defaultdict
 import heapq
+
 def solution(n, paths, gates, summits):
-    answer = []
-    min_summit = summits[0]
-    
-    # 1. paths -> graph로 변경하기
+    # MAX는 보다 큰 값 설정
+    MAX = 10000001
+    answer = [0, MAX]
+
+    # 0. summits을 list -> set으로 변경 : O(n)
+    set_summits = set(summits)
+
+    # 1. paths를 graph로 변경 (양방향)
     graph = defaultdict(list)
-    for v1, v2, cost in paths:
-        graph[v1].append((cost, v2))
-        graph[v2].append((cost, v1))
-    # return graph
-    
-    # 2. dijkstra
-    # 우선순위 큐에 한 번에 gates를 다 넣는다
-    pq = [(0, gate) for gate in gates] # (현재 경로의 intensity, 현재 지점)
+    for i, j, w in paths:
+        graph[i].append((w, j))
+        graph[j].append((w, i))
 
-    # 최대값으로 min_dis를 초기화
-    MAX = 10000001 # 최대값
-    min_dis = [MAX for _ in range(n + 1)]
-
+    # 2. dijkstra algorithm
+    min_dis = [MAX for _ in range(n+1)] # ! (n+1) 주의
+    # 2.1 우선순위 큐에 시작노드 gates 한 번에 넣기
+    pq = [(0, gate) for gate in gates]
     while pq:
-        intensity, cur_node = heapq.heappop(pq)
-        if min_dis[cur_node] <= intensity:
+        # 2.2 우선순위 가장 높은 노드 추출
+        intensity, cur_v = heapq.heappop(pq)
+        '''
+        # 2.3 방문여부 확인
+        # if cur_v not in costs:
+        #     costs[cur_v] = intensity
+        '''
+
+        # 2.3 방문여부 확인 대신에 min_dis[cur_v]보다 intensity가 더 작은값이면 갱신
+        if min_dis[cur_v] > intensity:
+            # 2.4 비용 업데이트
+            min_dis[cur_v] = intensity
+        else: # 크거나 같으면 무시
             continue
-        min_dis[cur_node] = intensity
 
-        for next_cost, next_node in graph[cur_node]:
-            next_cost = max(intensity, next_cost)
-            if min_dis[next_node] <= next_cost:
+        # 2.5 현재 노드와 연결된 노드 우선순위 큐에 추가
+        for cost, next_v in graph[cur_v]:
+            # 현재 cost와 다음 cost 비교해서 next_cost 구하기
+            next_cost = max(intensity, cost)
+            if min_dis[next_v] <= next_cost:
                 continue
-            heapq.heappush(pq, (next_cost, next_node))
+            # heappush 전에 산봉우리 노드 만나면 continue
+            if cur_v in set_summits: # 탐색시 시간복잡도 줄이기 list=O(n) -> set=O(1)
+                continue
+            heapq.heappush(pq, (next_cost, next_v))
 
-    return min_dis # [MAX, 0, 3, 0, 3, 3, 3]
+    # 3. summits 돌면서 answer 구하기
+    for summit in summits:
+        # min_dis(summit)이 최저 intensity보다 작으면
+        if answer[1] > min_dis[summit]:
+            answer = [summit, min_dis[summit]]
+        # intensity가 같으면 산봉우리 번호가 작은 값 선택
+        elif answer[1] == min_dis[summit] and summit < answer[0]:
+            answer[0] = summit
+    return answer
 
-
-
-
-
-
-
-
-
-
-
-    # # 2. dijkstra 함수 
-    # # 시간복잡도 : O(E log E) = O(200,000 log 200,000) # 2^18 = 262,144
-    # # = O(200,000 * 18) = 3.6 * 10^6 <= 10^7
-    # def dijkstra(gate):
-    #     costs = {}
-    #     pq = []
-    #     heapq.heappush(pq, (0, gate))
-
-    #     while pq:
-    #         cur_cost, cur_node = heapq.heappop(pq)
-    #         if cur_node not in costs:
-    #             costs[cur_node] = cur_cost
-    #             for cost, next_node in graph[cur_node]:
-    #                 next_cost = cur_cost + cost
-    #                 heapq.heappush(pq, (next_cost, next_node))
-    #     del costs[gate] # 본인 cost 삭제
-    #     return costs
-    # # return dijkstra(1)
-    # # {"1":0,"2":3,"3":8,"4":5,"5":7,"6":6}
-    
-    # # 가장 cost가 작은 노드 값 구하기
-    # def getShortNode(costs):
-        
-    #     return 0
-
-    # # gate마다 dijkstra
-    # for gate in gates:
-    #     cur_v = gate
-    #     cur_cost = 0 # 
-    #     while cur_v not in summits:
-    #         # cost가 가장 작은 key값
-    #         costs = dijkstra(cur_v)
-    #         cur_v = min(costs, key = costs.get)
-    #         # intensity(cost중에 max(최대값)) 구하기
-    #         if 'intensity' not in locals():
-    #             intensity = costs[cur_v]
-    #         else:
-    #             intensity = max(intensity, costs[cur_v])
-            
-    #     min_summit = min(min_summit, cur_v)
-        
-    #     # min(intensity) 비교
-    #     total_intensity = min(intensity, total_intensity)
-    #     if 'intensity' not in locals():
-    #             intensity = costs[cur_v]
-    #         else:
-        
-    #     answer = [min_summit, total_intensity]
-        
-    # # dijkstra(start)의 가장 cost가 작은 노드를 찾아
-    #     # intensity(max cost)저장
-    #     # dijkstra(가장 cost 작은 노드)
-    # # 가장 cost가 작은 노드가 summit이면 멈추기
-    
-    # # intensity가 가장 작으면 answer = [summit, intensity] 저장
-    
-    
-    
-    
-    
-    # # intensity 최소 등산코스 찾기
-    #     # 산봉우리 번호 작은거 찾기
-    # # 1 출발(gate) -> 5 산봉우리(summit) -> 1 출발(gate)
-    # # dijkstra(1) -> dijkstra(2) -> dijkstra(4) -> dijkstra(6) -> dijkstra(5)
-    
-    
-    
-
-    # return answer # [산봉우리의 번호, intensity의 최솟값]
 
 
 n = 6
